@@ -30,28 +30,47 @@ class _MyAppState extends State<MyApp> {
       }
     });
   }
-  _buildCompass(){
-
-  }
-  _buildPermission(){
-
-  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         // backgroundColor: Colors.brown[700]),
-        body: Builder(
-          builder: (cotext) {
-            if(_hasPermissions){
-              return _buildCompass();
-            } else {
-              return _buildPermission();
-            }
-          },
+        body: SafeArea(
+          child: Builder(
+            builder: (cotext) {
+              if(_hasPermissions){
+                return _buildCompass();
+              } else {
+                return _buildPermissionSheet();
+              }
+            },
+          ),
         ),
       )
     );
   }
+
+  // compass widget
+  // compileSdkVersion 33, minSdkVersion 23 & add permission_example
+  Widget _buildCompass(){
+    return Container(
+      margin: const EdgeInsets.only(top: 62),
+      child: Image.asset('assets/compass.png'),
+    );
+  }
+
+  // permission sheet widget
+  Widget _buildPermissionSheet(){
+    return Center(
+      child: ElevatedButton(
+        onPressed: (){
+          Permission.locationWhenInUse.request().then((value) {
+            _fetchPermissionStatus();
+          });
+        }, child: const Text('Request Permission'),
+      ),
+    );
+  }
+
 }
