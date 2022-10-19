@@ -1,3 +1,4 @@
+import 'package:compass_koko/neu_circle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_compass/flutter_compass.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -34,8 +35,9 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: Scaffold(
-      //backgroundColor: Colors.brown[700]),
+    return MaterialApp(
+        home: Scaffold(
+      backgroundColor: Colors.brown[600],
       body: SafeArea(
         child: Builder(
           builder: (cotext) {
@@ -79,16 +81,18 @@ class _MyAppState extends State<MyApp> {
           }
 
           // return compass
-          return Center(
-            child: Container(
-              margin: const EdgeInsets.only(top: 72),
-              padding: const EdgeInsets.all(25),
-              child: Transform.rotate(
-                angle: direction * (math.pi / 180) - 1,
-                child: Image.asset(
-                  'assets/compass.png',
-                  color: Colors.black
-                  ,
+          return NeuCircle(
+            child: Center(
+              child: Container(
+                //margin: const EdgeInsets.only(top: 2),
+                padding: const EdgeInsets.only(left: 25, right: 12, top: 15, bottom: 15),
+                child: Transform.rotate(
+                  angle: direction * (math.pi / 180) - 1,
+                  child: Image.asset(
+                    'assets/compass.png',
+                    color: Colors.white
+                    ,
+                  ),
                 ),
               ),
             ),
@@ -96,7 +100,7 @@ class _MyAppState extends State<MyApp> {
         });
   }
 
-  // permission sheet widget
+  // permission sheet widget : 인증 요구 버튼
   Widget _buildPermissionSheet() {
     return Center(
       child: ElevatedButton(
