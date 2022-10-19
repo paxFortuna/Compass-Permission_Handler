@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_compass/flutter_compass.dart';
 import 'package:permission_handler/permission_handler.dart';
-
+import 'dart:math' as math;
 void main() {
   runApp(const MyApp());
 }
@@ -23,7 +24,7 @@ class _MyAppState extends State<MyApp> {
 
   _fetchPermissionStatus() {
     Permission.locationWhenInUse.status.then((status) {
-      if(mounted){
+      if (mounted) {
         setState(() {
           _hasPermissions = (status == PermissionStatus.granted);
         });
@@ -33,44 +34,79 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        // backgroundColor: Colors.brown[700]),
-        body: SafeArea(
-          child: Builder(
-            builder: (cotext) {
-              if(_hasPermissions){
-                return _buildCompass();
-              } else {
-                return _buildPermissionSheet();
-              }
-            },
-          ),
+    return MaterialApp(home: Scaffold(
+      //backgroundColor: Colors.brown[700]),
+      body: SafeArea(
+        child: Builder(
+          builder: (cotext) {
+            if (_hasPermissions) {
+              return _buildCompass();
+            } else {
+              return _buildPermissionSheet();
+            }
+          },
         ),
-      )
-    );
+      ),
+    ));
   }
 
   // compass widget
   // compileSdkVersion 33, minSdkVersion 23 & add permission_example
-  Widget _buildCompass(){
-    return Container(
-      margin: const EdgeInsets.only(top: 62),
-      child: Image.asset('assets/compass.png'),
-    );
+  Widget _buildCompass() {
+    return StreamBuilder(
+        stream: FlutterCompass.events,
+        builder: (context, snapshot) {
+          // error msg
+          if (snapshot.hasError) {
+            return Text(
+              'Error reading heading: ${snapshot.error}',
+            );
+          }
+          // loading
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          double? direction = snapshot.data!.heading;
+
+          // if direction is null, then device does not support this sensor
+          if (direction == null) {
+            return const Center(
+              child: Text('Device does not have sensors'),
+            );
+          }
+
+          // return compass
+          return Center(
+            child: Container(
+              margin: const EdgeInsets.only(top: 72),
+              padding: const EdgeInsets.all(25),
+              child: Transform.rotate(
+                angle: direction * (math.pi / 180) - 1,
+                child: Image.asset(
+                  'assets/compass.png',
+                  color: Colors.black
+                  ,
+                ),
+              ),
+            ),
+          );
+        });
   }
 
   // permission sheet widget
-  Widget _buildPermissionSheet(){
+  Widget _buildPermissionSheet() {
     return Center(
       child: ElevatedButton(
-        onPressed: (){
+        onPressed: () {
           Permission.locationWhenInUse.request().then((value) {
             _fetchPermissionStatus();
           });
-        }, child: const Text('Request Permission'),
+        },
+        child: const Text('Request Permission'),
       ),
     );
   }
-
 }
