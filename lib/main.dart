@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_compass/flutter_compass.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:math' as math;
+
 void main() {
   runApp(const MyApp());
 }
@@ -85,7 +86,7 @@ class _MyAppState extends State<MyApp> {
             child: Center(
               child: Container(
                 //margin: const EdgeInsets.only(top: 2),
-                padding: const EdgeInsets.only(left: 25, right: 12, top: 15, bottom: 15),
+                padding: const EdgeInsets.all(15),
                 child: Transform.rotate(
                   angle: direction * (math.pi / 180) - 1,
                   child: Image.asset(
